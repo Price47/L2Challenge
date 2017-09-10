@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>PriceWeb</title>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <script src="https://code.highcharts.com/highcharts.src.js"></script>
+
+    <script src="https://use.fontawesome.com/8265947dd0.js"></script>
+
+    {%  load static %}
+    {%  load staticfiles %}
+
+
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'priceweb/styles.css' %}" />
+
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'priceweb/animations.css' %}" />
+
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'priceweb/loadingscreens.css' %}" />
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <script src="{% static 'javascript/control.js' %}"></script>
+
+    <script src="{% static 'javascript/charts.js' %}"></script>
+
+    <link rel="shortcut icon" type="image/png" href="{% static "priceweb/favicon.ico" %} "/>
+
+</head>
+
+{% load static %}
+<body>
+
+
+
+<div id="header_container" class="wood-color-light">
+    <div id="header" class="headernav wood-color-dark">
+        <form class="text-style-descriptive">
+        <div id="home-logo" class="home-logo">
+            <a href="/">
+                <img src="{% static "priceweb/47.png" %}" alt="My image" height="76.8" width="102.4"/>
+            </a>
+        </div>
+            <h3 id="title_main" class="wood-font"></h3>
+        </form>
+    </div>
+</div>
+
+
+<div id="content" class="container-fluid">
+    {% block content %}
+    {% endblock %}
+</div>
+
+</body>
+</html>
+

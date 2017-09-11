@@ -13,8 +13,10 @@ helper = HelperObject()
 
 @periodic_task(run_every=crontab(hour=1, minute=30))
 def update_bestbuy_snapshot():
-    helper.clearTodaysData()
-
+    """
+    grab latest data at 1 in the morning
+    :return:
+    """
     SO(keyword='smart tv').search()
     SO(keyword='curved smart tv').search()
 
@@ -38,20 +40,34 @@ def getTVData(request):
     smart_tv.search()
     curved_smart_tv.search()
 
-    return_obj = helper.retrieveData(today)
+    return_obj = helper.defineQuery(today)
 
     return JsonResponse(return_obj)
 
 
 def savedTVData(request, search_date=None):
+    print ('not range in this one')
     if(search_date==None):
-        search_date = date.today()
+        search = date.today()
     else:
-        datetime.strptime(search_date,"%Y-%m-%d").date()
-    return_obj = helper.retrieveData(search_date)
+        search = datetime.strptime(search_date,"%Y-%m-%d").date()
+    return_obj = helper.defineQuery(search)
 
     return JsonResponse(return_obj)
 
+def savedTVDataRange(request, start_date=None, end_date=None):
+    print ('svaed data range')
+    if(start_date==None):
+        start = date.today()
+    if(end_date==None):
+        end = date.today()
+    else:
+        start = datetime.strptime(start_date,"%Y-%m-%d").date()
+        end = datetime.strptime(end_date,"%Y-%m-%d").date()
+
+    return_obj = helper.defineRangeQuery(start,end)
+
+    return JsonResponse(return_obj)
 
 def getTvDataCSVbyDate(request, search_date=None):
     if search_date == None:
@@ -67,8 +83,28 @@ def getTvDataCSVbyDate(request, search_date=None):
 
     writer = csv.writer(response)
 
-    helper.formatCSVData('smart tv', writer, search_date)
-    helper.formatCSVData('curved smart tv', writer, search_date)
+    helper.formatCSVData('smart tv', writer, search_date=search_date)
+    helper.formatCSVData('curved smart tv', writer, search_date=search_date)
+
+    response.set_cookie(key='JSANIMATORCHECK', value='csv_download_complete')
+
+    return response
+
+def getTvDataCSVbyDateRange(request, start_date=None, end_date=None):
+
+
+    d = datetime.now()
+    unique_string = "%d%d%d%d%d%d" % (d.year, d.month, d.day, d.hour, d.minute, d.second)
+
+    filename = "Data_" + unique_string + ".csv"
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=' + filename
+
+    writer = csv.writer(response)
+
+    helper.formatCSVData('smart tv', writer, start_date=start_date, end_date=end_date)
+    helper.formatCSVData('curved smart tv', writer, start_date=start_date, end_date=end_date)
 
     response.set_cookie(key='JSANIMATORCHECK', value='csv_download_complete')
 

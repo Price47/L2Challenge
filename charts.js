@@ -1,5 +1,10 @@
-
+/**
+ * Created by rockstar645 on 9/5/17.
+ */
 $(document).ready(function(){
+    $('#range_menu').hide();
+    $( "#datepicker" ).datepicker();
+    $( "#datepicker2" ).datepicker();
     delete_cookie("JSANIMATORCHECK");
     cookie = false;
     document.getElementById("download_csv").addEventListener("click", function(){
@@ -9,19 +14,36 @@ $(document).ready(function(){
     });
 });
 
-var highestDateOffset = 2;
+var highestDateOffset;
+
+function headerDate(date){
+    string = date.split("-");
+    return string[1] + "/" + string[2] +"/" + string[0]
+}
 
 function getLowestDate(){
     lowestDate = $.get('/lowestDate').then(
         function(success){
 
-            highestDateOffset = parseInt(success['high_date'].split("-")[2]) -
-                parseInt(success['low_date'].split("-")[2]);
+            highestDateOffset = (parseInt(success['high_date'].split("-")[2]) -
+                parseInt(success['low_date'].split("-")[2]));
 
     },
         function(error){
             console.log(error)
         });
+}
+
+function setDaily(){
+    dbData();
+    $('#daily_menu').slideDown();
+    $('#range_menu').slideUp();
+}
+
+function setRange(){
+    $('#range_menu').slideDown();
+    $('#daily_menu').slideUp()
+
 }
 
 function clearAnimation(){
@@ -39,6 +61,8 @@ var delete_cookie = function(name) {
     document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 };
 
+// This function actually scrapes best buy for data, before creating charts. The data scraped is
+// added to the DB. This function is only called when the client clicks "update"
 function getTvData(){
         $('.data-chart').css('display', 'none');
         document.getElementById('best_buy_loader').style.display="inline";
@@ -46,28 +70,68 @@ function getTvData(){
         $.get('get_bestbuy_data').then(successCallback, errorCallback)
 }
 
+// Grab today's television data
 function dbData(){
     $('#date').text(0);
     url = "getbestbuycsv/" + new Date().toISOString().split('T')[0];
     document.getElementById("download_csv").href = (url);
     $('.data-chart').css('display', 'none');
     now = new Date().toISOString().split('T')[0];
-    $('#header_date').text('Best Buy Data ' + now);
+    $('#header_date').text(headerDate(now));
     document.getElementById('best_buy_loader').style.display="inline";
     console.log('collecting data...');
     $.get('savedTVData/'+ now).then(successCallback, errorCallback);
 
 }
 
+// Grab Television data by a specific date
 function dbDataByDate(date){
     cur_date = date.toISOString().split('T')[0];
     $('.data-chart').css('display', 'none');
-        $('#header_date').text('Best Buy Data ' + cur_date );
-        document.getElementById('best_buy_loader').style.display="inline";
-        console.log('collecting data...');
-        $.get('savedTVData/'+ cur_date).then(successCallback, errorCallback);
+    $('#header_date').text(headerDate(cur_date));
+    document.getElementById('best_buy_loader').style.display="inline";
+    console.log('collecting data...');
+    $.get('savedTVData/'+ cur_date).then(successCallback, errorCallback);
 }
 
+// Grab the date from the 2 date fields, setting it to today if the field isn't filled in,
+// and then updates the download_csv href, then gets data for that date range.
+function dbDataByRange(){
+        date = new Date();
+        console.log('range');
+
+        if($( "#datepicker" ).val()) {
+            startDate = $( "#datepicker" ).val().split("/");
+            start = startDate[2] + "-" + startDate[0] + "-" + startDate[1];
+        }
+        else{
+            start = date.toISOString().split('T')[0];
+        }
+
+        if($( "#datepicker2" ).val()) {
+            endDate = $( "#datepicker2" ).val().split("/");
+            end = endDate[2] + "-" + endDate[0] + "-" + endDate[1];
+        }
+        else{
+            end = date.toISOString().split('T')[0];
+        }
+
+        $('#header_date').text(headerDate(start) + " to " + headerDate(end) );
+
+        url = "getbestbuycsv/" + start + "/" + end;
+        document.getElementById("download_csv").href = (url);
+
+        $('.data-chart').css('display', 'none');
+        document.getElementById('best_buy_loader').style.display="inline";
+        console.log('collecting data...');
+        $.get('savedTVDataRange/' + start + "/" + end).then(successCallback, errorCallback)
+}
+
+// getNext and getPrev load the next or previous days data. The value saves in #date
+// is the offset from today of the data being searched (9/6/2017 is 3 days away from 9/9/2017,
+// so the offset is 3.) 86500000 is one day in milliseconds, times the offset is days, which
+// gives the date next in the sequence. the download_csv href is also updated, so that
+// the csv downloaded is for the data currently being viewed.
 function getNext(){
 
     current = $('#date').text();
@@ -91,13 +155,15 @@ function getNext(){
 function getPrev(){
 
     current = $('#date').text();
-    dateOffset = parseInt(current)+1;
+
+    dateOffset = parseInt(current) + 1;
 
     if(dateOffset > highestDateOffset){
         dateOffset = highestDateOffset
     }
 
     $('#date').text(dateOffset);
+
     cur = new Date(new Date() - (86500000*dateOffset));
 
     url = "getbestbuycsv/" + cur.toISOString().split('T')[0];
@@ -107,18 +173,13 @@ function getPrev(){
     dbDataByDate(cur)
 }
 
-function getDate(){
-    current = $('#date').text();
-
-    date = new Date(new Date() - (86500000*parseInt(current)));
-
-    return date
-}
 
 function errorCallback(response){
     console.log(response)
 }
 
+// This function is called for each data request from the db, and populates
+// the highcharts graphs with data from the requests
 function successCallback(response){
     var straightData = response['normal_hits'];
     var curvedData = response['curved_hits'];
@@ -334,6 +395,8 @@ function successCallback(response){
     });
 }
 
+
+// Sets global style for highcharts
 $(function () {
     Highcharts.setOptions({
         colors:['#447fff', '#44ff91', '#ffab4c', '#c549ff']

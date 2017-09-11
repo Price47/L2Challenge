@@ -32,7 +32,14 @@ the "featured products" Televisions, it seemed like they weren't necessarily par
 
 I've included a sample csv of data, which is what you'll get if you download any day's data with the "download button."
 Additionally, you can use the arrows above the charts to navigate snapshots from different days and download those
-results.
+results. There is also a date range search, so you can search form a given date range. The total number of TV's for that
+range will be represented in the graphs showing the percentage of brands present in the search. For review trends and
+rating trends, I decided the most useful way to display the trends over a given range was to take the mean value for
+rating/review for each search rank over that period and graph that. The rating for every TV with the search rank of 2,
+for example, is averaged for the date range searched, to show what the average rating for a tv with search rank of 2 for
+any given day. This way for a span of 2 or 3 weeks, you get a clear trend for the relationship between rating and
+search rank or reviews and search rank
+
 
 
 

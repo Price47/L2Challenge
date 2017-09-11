@@ -120,6 +120,23 @@
         background: #44ff91;
     }
 
+    .date-range-form-item{
+        display: block;
+        margin:auto
+    }
+
+    #daily_view:hover{
+        background: #44ff91;
+    }
+
+    #range_view:hover{
+        background: #44ff91;
+    }
+
+    #range_submit:hover{
+        background: #44ff91;
+    }
+
 </style>
 
 
@@ -157,7 +174,17 @@
 
 <p hidden id="date">0</p>
 
-<div style="width: 100%;height:60px;margin-bottom: 10px;margin-top:-30px;">
+<div style="width:100%;height:50px;margin-bottom: 15px;margin-top:-30px">
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <button class=top-nav-button style="width:100%;margin:5px 0" id="daily_view" onclick="setDaily()">Daily</button>
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        <button class=top-nav-button style="width:100%;margin:5px 0" id="range_view" onclick="setRange()">Range</button>
+    </div>
+
+</div>
+
+<div id="daily_menu" style="width: 100%;height:60px;margin-bottom: 15px;margin-top:-30px;">
     <button class="date-buttons" style="left:5%" onclick="getPrev()">
         <i class="fa fa-arrow-circle-left fa-2x" aria-hidden="true" style="color:white"></i>
     </button>
@@ -167,6 +194,27 @@
     <button class="date-buttons" style="left:63%;" onclick="getNext()">
         <i class="fa fa-arrow-circle-right fa-2x" aria-hidden="true" style="color:white"></i>
     </button>
+</div>
+
+
+<div id="range_menu" style="width:100%;height:100px;margin-bottom: 15px;">
+
+
+
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4" >
+            <strong style="color:white">Start:</strong><br>
+            <input style="margin-top: 15px;margin-bottom:15px;" name="start_date" type="text" id="datepicker">
+        </div>
+
+        <div class="dcol-xs-12 col-sm-4 col-md-4 col-lg-4" >
+                <strong style="margin-top: 15px;color:white">End:</strong><br>
+                <input style="margin-top: 15px;margin-bottom:15px;" name="end_date" type="text" id="datepicker2">
+        </div>
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4" >
+            <button id="range_submit" class="top-nav-button"  style="width: 100%;margin-top:30px;"
+                    onclick="dbDataByRange()">Search</button>
+        </div>
+
 </div>
 
 <div id="top_3_percentage"
